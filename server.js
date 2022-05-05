@@ -54,6 +54,49 @@ app.delete('/explorers/:id', async (req, res) => {
 	return res.json({message: "Eliminado correctamente"});
 });
 
+app.get('/missions', async (req, res) => {
+  const allExplorers =  await prisma.mission.findMany({});
+  res.json(allExplorers);
+});
+
+app.get('/missions/:id', async (req, res) => {
+  const id = req.params.id;
+  const explorer = await prisma.mission.findUnique({where: {id: parseInt(id)}});
+  res.json(explorer);
+});
+
+app.post('/missions', async (req, res) => {
+  const missions = {
+    name: req.body.name,
+    lang: req.body.lang,
+    missionCommander: req.body.missionCommander
+  };
+  const message = 'Explorer creado.';
+  await prisma.mission.create({data: missions});
+  return res.json({message});
+});
+
+app.put('/missions/:id', async (req, res) => {
+	const id = parseInt(req.params.id);
+
+	await prisma.mission.update({
+		where: {
+			id: id
+		},
+		data: {
+			lang: req.body.lang
+		}
+	})
+
+	return res.json({message: "Actualizado correctamente"});
+});
+
+app.delete('/missions/:id', async (req, res) => {
+	const id = parseInt(req.params.id);
+	await prisma.mission.delete({where: {id: id}});
+	return res.json({message: "Eliminado correctamente"});
+});
+
 app.listen(port, () => {
   console.log(`Listening to requests on port ${port}`);
 });
